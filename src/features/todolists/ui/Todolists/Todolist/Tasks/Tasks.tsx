@@ -3,13 +3,18 @@ import { TaskStatus } from "common/enums"
 import { useGetTasksQuery } from "../../../../api/tasksApi"
 import { DomainTodolist } from "../../../../model/todolistsSlice"
 import { Task } from "./Task/Task"
+import {TasksSkeleton} from "../../../skeletons/TasksSkeleton/TasksSkeleton";
 
 type Props = {
   todolist: DomainTodolist
 }
 
 export const Tasks = ({ todolist }: Props) => {
-  const { data } = useGetTasksQuery(todolist.id)
+  const { data, isLoading } = useGetTasksQuery(todolist.id)
+
+  if (isLoading) {
+    return <TasksSkeleton />
+  }
 
   let tasksForTodolist = data?.items
 
