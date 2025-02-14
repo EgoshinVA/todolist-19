@@ -20,14 +20,11 @@ export const TodolistTitle = ({todolist}: Props) => {
     const dispatch = useAppDispatch()
 
     const updateQueryData = (status: RequestStatus) => {
-        dispatch(
-            todolistsApi.util.updateQueryData('getTodolists', undefined, state => {
-                const index = state.findIndex(tl => tl.id === id)
-                if (index !== -1) {
-                    state[index].entityStatus = status
-                }
-            })
-        )
+        dispatch(todolistsApi.util.updateQueryData('getTodolists', undefined, (state) => {
+            const todolist = state.find(tl => tl.id === id)
+            if (todolist)
+                todolist.entityStatus = status
+        }))
     }
 
     const removeTodolistHandler = () => {

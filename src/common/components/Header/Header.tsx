@@ -11,46 +11,48 @@ import {getTheme} from "common/theme"
 import {changeTheme, selectAppStatus, selectIsLoggedIn, selectThemeMode, setIsLoggedIn} from "../../../app/appSlice"
 import {useLogoutMutation} from "../../../features/auth/api/authAPI"
 import {baseApi} from "../../../app/baseApi";
+import {todolistsApi} from "../../../features/todolists/api/todolistsApi";
+import {tasksApi} from "../../../features/todolists/api/tasksApi";
 
 export const Header = () => {
-  const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch()
 
-  const themeMode = useAppSelector(selectThemeMode)
-  const status = useAppSelector(selectAppStatus)
-  const isLoggedIn = useAppSelector(selectIsLoggedIn)
+    const themeMode = useAppSelector(selectThemeMode)
+    const status = useAppSelector(selectAppStatus)
+    const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
-  const [logout] = useLogoutMutation()
+    const [logout] = useLogoutMutation()
 
-  const theme = getTheme(themeMode)
+    const theme = getTheme(themeMode)
 
-  const changeModeHandler = () => {
-    dispatch(changeTheme({ themeMode: themeMode === "light" ? "dark" : "light" }))
-  }
+    const changeModeHandler = () => {
+        dispatch(changeTheme({themeMode: themeMode === "light" ? "dark" : "light"}))
+    }
 
-  const logoutHandler = () => {
-    logout().then((res) => {
-      if (res.data?.resultCode === ResultCode.Success) {
-        dispatch(setIsLoggedIn({ isLoggedIn: false }))
-        localStorage.removeItem("sn-token")
-      }
-    }).then(() => {
-      dispatch(baseApi.util.invalidateTags(['Task', 'Todolist']))
-    })
-  }
+    const logoutHandler = () => {
+        logout().then((res) => {
+            if (res.data?.resultCode === ResultCode.Success) {
+                dispatch(setIsLoggedIn({isLoggedIn: false}))
+                localStorage.removeItem("sn-token")
+            }
+        }).then(() => {
+            dispatch(baseApi.util.invalidateTags(['Todolist', 'Task']))
+        })
+    }
 
-  return (
-    <AppBar position="static" sx={{ mb: "30px" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <IconButton color="inherit">
-          <MenuIcon />
-        </IconButton>
-        <div>
-          {isLoggedIn && <MenuButton onClick={logoutHandler}>Logout</MenuButton>}
-          <MenuButton background={theme.palette.primary.dark}>Faq</MenuButton>
-          <Switch color={"default"} onChange={changeModeHandler} />
-        </div>
-      </Toolbar>
-      {status === "loading" && <LinearProgress />}
-    </AppBar>
-  )
+    return (
+        <AppBar position="static" sx={{mb: "30px"}}>
+            <Toolbar sx={{display: "flex", justifyContent: "space-between"}}>
+                <IconButton color="inherit">
+                    <MenuIcon/>
+                </IconButton>
+                <div>
+                    {isLoggedIn && <MenuButton onClick={logoutHandler}>Logout</MenuButton>}
+                    <MenuButton background={theme.palette.primary.dark}>Faq</MenuButton>
+                    <Switch color={"default"} onChange={changeModeHandler}/>
+                </div>
+            </Toolbar>
+            {status === "loading" && <LinearProgress/>}
+        </AppBar>
+    )
 }
