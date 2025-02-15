@@ -1,34 +1,16 @@
 import List from "@mui/material/List"
-import {TaskStatus} from "common/enums"
-import {useGetTasksQuery} from "../../../../api/tasksApi"
-import {DomainTodolist} from "../../../../model/todolistsSlice"
-import {Task} from "./Task/Task"
-import {TasksSkeleton} from "../../../skeletons/TasksSkeleton/TasksSkeleton";
-import {useAppDispatch} from "common/hooks";
-import {useEffect} from "react";
-import {setAppError} from "../../../../../../app/appSlice";
+import { TaskStatus } from "common/enums"
+import { useGetTasksQuery } from "../../../../api/tasksApi"
+import { DomainTodolist } from "../../../../model/todolistsSlice"
+import { Task } from "./Task/Task"
+import { TasksSkeleton } from "../../../skeletons/TasksSkeleton/TasksSkeleton"
 
 type Props = {
     todolist: DomainTodolist
 }
 
 export const Tasks = ({todolist}: Props) => {
-    const {data, isLoading, error} = useGetTasksQuery(todolist.id)
-
-    const dispatch = useAppDispatch()
-
-    useEffect(() => {
-        if (error) {
-            if ('status' in error) {
-                //fetch base query
-                const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
-                dispatch(setAppError({error: errMsg}))
-            } else {
-                //other error
-                dispatch(setAppError({error: error.message ? error.message : 'some error occurred.'}))
-            }
-        }
-    }, [error]);
+    const {data, isLoading} = useGetTasksQuery(todolist.id)
 
     if (isLoading) {
         return <TasksSkeleton/>
