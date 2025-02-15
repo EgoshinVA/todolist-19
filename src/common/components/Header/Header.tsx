@@ -11,8 +11,6 @@ import {getTheme} from "common/theme"
 import {changeTheme, selectAppStatus, selectIsLoggedIn, selectThemeMode, setIsLoggedIn} from "../../../app/appSlice"
 import {useLogoutMutation} from "../../../features/auth/api/authAPI"
 import {baseApi} from "../../../app/baseApi";
-import {todolistsApi} from "../../../features/todolists/api/todolistsApi";
-import {tasksApi} from "../../../features/todolists/api/tasksApi";
 
 export const Header = () => {
     const dispatch = useAppDispatch()
