@@ -1,4 +1,3 @@
-import { instance } from "common/instance"
 import { BaseResponse } from "common/types"
 import { baseApi } from "../../../app/baseApi"
 import { Todolist } from "./todolistsApi.types"
@@ -9,7 +8,7 @@ export const todolistsApi = baseApi.injectEndpoints({
     getTodolists: build.query<DomainTodolist[], void>({
       query: () => "todo-lists",
       transformResponse(todolists: Todolist[]): DomainTodolist[] {
-        return todolists.map((tl) => ({ ...tl, filter: "all", entityStatus: "idle" }))
+        return todolists.map((tl) => ({ ...tl, filter: "all" }))
       },
       providesTags: ["Todolist"],
     }),
@@ -28,6 +27,19 @@ export const todolistsApi = baseApi.injectEndpoints({
         return {
           method: "DELETE",
           url: `todo-lists/${id}`,
+        }
+      },
+      async onQueryStarted(id: string, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          todolistsApi.util.updateQueryData("getTodolists", undefined, (state) => {
+            const index = state.findIndex((tl) => tl.id === id)
+            if (index !== -1) state.splice(index, 1)
+          }),
+        )
+        try {
+          await queryFulfilled
+        } catch {
+          patchResult.undo()
         }
       },
       invalidatesTags: ["Todolist"],
@@ -53,20 +65,3 @@ export const {
   useRemoveTodolistMutation,
   useUpdateTodolistTitleMutation,
 } = todolistsApi
-
-
-export const _todolistsApi = {
-  getTodolists() {
-    return instance.get<Todolist[]>("todo-lists")
-  },
-  updateTodolist(payload: { id: string; title: string }) {
-    const { title, id } = payload
-    return instance.put<BaseResponse>(`todo-lists/${id}`, { title })
-  },
-  createTodolist(title: string) {
-    return instance.post<BaseResponse<{ item: Todolist }>>("todo-lists", { title })
-  },
-  deleteTodolist(id: string) {
-    return instance.delete<BaseResponse>(`todo-lists/${id}`)
-  },
-}
